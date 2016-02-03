@@ -1,0 +1,41 @@
+---
+title: "pagerank_wikivote"
+output: html_document
+---
+PageRank is a popular algorithm in scoring nodes importance in a graph dataset.
+Here is an example of applying pagerank algorithm to wiki-administrators-vote data to find out:
+Who are important wiki administrators involved in elections? 
+
+First of all, let's analyze the dataset.
+data souce: https://snap.stanford.edu/data/wiki-Vote.txt.gz
+Source (citation)
+
+    J. Leskovec, D. Huttenlocher, J. Kleinberg. Signed Networks in Social Media. CHI 2010.
+    J. Leskovec, D. Huttenlocher, J. Kleinberg. Predicting Positive and Negative Links in Online Social Networks. WWW 2010.
+
+Here displays some information in the data source:
+
+```{r}
+wikivote = "/Users/lulu/BIGDATA/NetworkX/wiki-Vote.txt"
+read.csv(wikivote,nrow = 3)
+```
+
+As you can see, the dataset is very similar to a graph type data structure, since there are only two elements in each line, showing a vote from A to B. 
+In R, the 'igraph' library provides function make_graph to convert a vector to a graph object which is then suitable as the input of the function page.rank. The page.rank function gives the score of importance of each node using google pagerank algorithm.
+
+```{r}
+dat = read.csv(wikivote,sep ='\t',skip = 3)
+edges = as.character(as.vector(as.matrix(dat)))
+library(igraph)
+graf = make_graph(edges,directed = TRUE)
+prank = page.rank(graf,directed = TRUE,vids = V(graf))
+```
+
+Now we have IDs of the top 10 important/popular administrators as well as their scores.
+
+```{r, echo=FALSE}
+head(sort(prank$vector,decreasing = TRUE),10)
+```
+
+The library igraph is also available in python. 
+There is another similar library NetworkX in python which also does a very good job in dealing with graph data.
